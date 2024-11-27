@@ -26,6 +26,16 @@
 // console.log(person[1.5]);
 // console.log(person["level"]);
 
+// const person = {name: 'Max', hobbies:['Sports', 'Cooking']};
+// const anotherPerson = person;
+// person.age = 31
+// person.hobbies.push('coding')
+// const person3 = { ...person, age: 29, hobbies: [...person.hobbies]}
+
+//another copying method
+// const person2 = {name:"max"};
+// const person3 = Object.assign({}, person2);
+
 const addMovieButton = document.getElementById("add-movie-btn");
 const searchButton = document.getElementById("search-btn");
 
@@ -48,10 +58,19 @@ const renderMovie = (filter = "") => {
 
   filterdMovies.forEach((movie) => {
     const movieEl = document.createElement("li");
-    let text = movie.info.title + " - ";
-    for (const key in movie.info) {
+    if ("info" in movie) {
+    }
+    const { info, ...otherProps } = movie;
+    //const { title: movieTitle } = info;
+    //let text = movie.info.title + " - ";___1
+    //we can use 2 instead of 1
+    let { getFormattedTitle } = movie;
+    getFormattedTitle = getFormattedTitle.bind(movie);
+    let text = movie.getFormattedTitle() + " - "; //___2
+    console.log(otherProps);
+    for (const key in info) {
       if (key !== "title") {
-        text = text + `${key}: ${movie.info[key]}`;
+        text = text + `${key}: ${info[key]}`;
       }
     }
     movieEl.textContent = text;
@@ -89,7 +108,10 @@ const addMovieHandler = () => {
       title,
       [extraName]: extraValue,
     },
-    id: Math.random(),
+    id: Math.random().toString(),
+    getFormattedTitle() {
+      return this.info.title.toUpperCase();
+    },
   };
   movies.push(newMovie);
   renderMovie();
