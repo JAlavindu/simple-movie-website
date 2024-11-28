@@ -65,11 +65,11 @@ const renderMovie = (filter = "") => {
     //let text = movie.info.title + " - ";___1
     //we can use 2 instead of 1
     let { getFormattedTitle } = movie;
-    getFormattedTitle = getFormattedTitle.bind(movie);
-    let text = movie.getFormattedTitle() + " - "; //___2
+    //getFormattedTitle = getFormattedTitle.bind(movie);
+    let text = getFormattedTitle.call(movie) + " - "; //___2
     console.log(otherProps);
     for (const key in info) {
-      if (key !== "title") {
+      if (key !== "title" && key !== "_title") {
         text = text + `${key}: ${info[key]}`;
       }
     }
@@ -96,7 +96,7 @@ const addMovieHandler = () => {
   const extraValue = document.getElementById("extra-value").value;
 
   if (
-    title.trim() === "" ||
+    //title.trim() === "" ||
     extraName.trim() === "" ||
     extraValue.trim() === ""
   ) {
@@ -105,7 +105,16 @@ const addMovieHandler = () => {
 
   const newMovie = {
     info: {
-      title,
+      //title,
+      set title(val) {
+        if (val.trim() === "") {
+          this._title = "DEFAULT";
+        }
+        this._title = val;
+      },
+      get title() {
+        return this._title;
+      },
       [extraName]: extraValue,
     },
     id: Math.random().toString(),
@@ -117,7 +126,10 @@ const addMovieHandler = () => {
   renderMovie();
 };
 
+newMovie.info.title = title;
+
 const searchMovieHandler = () => {
+  console.log(this);
   const filterTerm = document.getElementById("filter-title").value;
   renderMovie(filterTerm);
 };
